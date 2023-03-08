@@ -6,6 +6,8 @@
  * Copyright 2011-2016 Digital Bazaar, Inc.
  */
 const path = require('path');
+const webpack = require('webpack');
+
 
 // build multiple outputs
 module.exports = [];
@@ -83,8 +85,13 @@ outputs.forEach(info => {
       path: path.join(__dirname, 'dist'),
       filename: info.filenameBase + '.js',
       library: info.library || '[name]',
-      libraryTarget: info.libraryTarget || 'umd'
-    }
+      libraryTarget: info.libraryTarget || 'var'
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        window: 'global/window',
+      }),
+    ]
   });
   if(info.library === null) {
     delete bundle.output.library;
@@ -100,22 +107,13 @@ outputs.forEach(info => {
       path: path.join(__dirname, 'dist'),
       filename: info.filenameBase + '.min.js',
       library: info.library || '[name]',
-      libraryTarget: info.libraryTarget || 'umd'
+      libraryTarget: info.libraryTarget || 'var'
     },
     devtool: 'cheap-module-source-map',
     plugins: [
-      /*
-      new webpack.optimize.UglifyJsPlugin({
-        sourceMap: true,
-        compress: {
-          warnings: true
-        },
-        output: {
-          comments: false
-        }
-        //beautify: true
-      })
-      */
+      new webpack.ProvidePlugin({
+        window: 'global/window',
+      }),
     ]
   });
   if(info.library === null) {
